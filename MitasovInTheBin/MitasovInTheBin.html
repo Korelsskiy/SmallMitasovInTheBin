@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <script>
+            window.addEventListener("load", init, false);
+
+            function init() {
+                let mitasovCount = 1;
+                let mitasov = document.getElementById("mitasov0");
+                let bin = document.getElementById("bin");
+                let outerMitasov = document.getElementById("outerMitas");
+                let counter = document.getElementsByTagName("label")[1];
+
+                mitasov.addEventListener("mousedown", dragF);
+
+                function dragF(e) {
+                    drag(this, e);
+                }
+
+                function drag(elementToDrag, event) {
+                    let startX = event.clientX,
+                    startY = event.clientY;
+
+                    let origX = elementToDrag.offsetLeft,
+                    origY = elementToDrag.offsetTop;
+
+                    let deltaX = startX - origX,
+                    deltaY = startY - origY;
+
+                    document.addEventListener("mousemove", moveHandler, true);
+                    document.addEventListener("mouseup", upHandler, true);
+
+                    function moveHandler(e) {
+                        if(!e) e= window.event;
+
+                        elementToDrag.style.left = (e.clientX - deltaX) + "px";
+                        elementToDrag.style.top = (e.clientY - deltaY) + "px";
+                    }
+
+                    function upHandler(e) {
+                        checkForMitasovPosition(mitasov);
+
+                        document.removeEventListener("mousemove", moveHandler, true);
+                        document.removeEventListener("mouseup", upHandler, true);   
+                    }
+
+                    function checkForMitasovPosition(probablyMitasov) {
+                        let leftMeters = probablyMitasov.offsetLeft + 25;
+                        let rightMeters = probablyMitasov.offsetTop + 25;
+
+                        if(leftMeters < bin.offsetLeft + 150 && leftMeters > bin.offsetLeft
+                        && rightMeters < bin.offsetTop + 90 && rightMeters > bin.offsetTop){
+                            let count = Number(counter.innerHTML);
+                            counter.innerHTML = ++count;
+                            probablyMitasov.removeEventListener("mousedown", dragF);
+
+
+                            outerMitasov.innerHTML += `<div id="mitasov${mitasovCount++}" style="position:absolute; background-image:url(mitasov.png); height: 50px; width: 50px; background-size: cover;" ></div>`;
+                            mitasov = document.getElementById(`mitasov${mitasovCount-1}`);
+                            mitasov.addEventListener("mousedown", dragF);
+                             
+                        }
+                    }
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <label>Митасовых в корзине: </label>
+        <label id="counter">0</label>
+        <br>
+        <div id="outerMitas" style="float: left;">
+            <div id="mitasov0" style="position:absolute; background-image:url(mitasov.png); height: 50px; width: 50px; background-size: cover;" ></div>
+        </div>
+        
+        <div id="bin" style=" background-image: url(bin.jpg); margin-top: 200px; margin-left: 700px; height: 90px; width: 150px; background-size:cover;"></div>
+    </body>
+</html>
